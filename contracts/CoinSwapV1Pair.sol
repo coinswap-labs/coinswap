@@ -62,6 +62,8 @@ contract CoinSwapV1Pair is CoinSwapV1ERC20 {
 
     event FeeSplit(address src, uint256 _tokenId, address _token, address _to, uint256 _value);
 
+    event TokenBurn(uint burnAmount);
+
     constructor() public {
         factory = msg.sender;
     }
@@ -221,6 +223,7 @@ contract CoinSwapV1Pair is CoinSwapV1ERC20 {
                 if (amount0Out == 0) {
                     if (IFeeManager(feeManager).feeToken() == _token0) {
                         _safeTransfer(_token0, IFeeManager(feeManager).blackHoleAddress(), param.amount0In.mul(3) / 1000);
+                        emit TokenBurn(param.amount0In.mul(3) / 1000);
                     } else {
                         (uint[] memory valueData, address[] memory addressData) = IFeeManager(feeManager).feeSplit(from, param.amount0In.mul(3) / 1000);
                         if (valueData[0] > 0) {
@@ -237,6 +240,7 @@ contract CoinSwapV1Pair is CoinSwapV1ERC20 {
                 if (amount1Out == 0) {
                     if (IFeeManager(feeManager).feeToken() == _token1) {
                         _safeTransfer(_token1, IFeeManager(feeManager).blackHoleAddress(), param.amount1In.mul(3) / 1000);
+                        emit TokenBurn(param.amount1In.mul(3) / 1000);
                     } else {
                         (uint[] memory valueData, address[] memory addressData) = IFeeManager(feeManager).feeSplit(from, param.amount1In.mul(3) / 1000);
                         if (valueData[0] > 0) {

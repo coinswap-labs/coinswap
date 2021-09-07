@@ -100,7 +100,11 @@ contract SwapMining is Ownable {
 
     function addPair(uint256 _allocPoint, address _pair, bool _withUpdate) public onlyOwner {
         require(_pair != address(0), "_pair is the zero address");
-        require(poolInfo[pairOfPid[address(_pair)]].pair != _pair, "repeatedly adding");
+        require(pairOfPid[address(_pair)] == 0, "repeatedly adding");
+        if (poolInfo.length > 0) {
+            require(poolInfo[0].pair != _pair, "index 0 repeatedly adding");
+        }
+
         if (_withUpdate) {
             massMintPools();
         }

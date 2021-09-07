@@ -110,7 +110,7 @@ contract Pool is Ownable {
     }
 
     modifier validatePoolByPid(uint256 _pid)  {
-        require (_pid < poolInfo.length , "Pool does not exist")  ;
+        require(_pid < poolInfo.length, "Pool does not exist");
         _;
     }
 
@@ -181,7 +181,11 @@ contract Pool is Ownable {
     // XXX DO NOT add the same LP token more than once. Rewards will be messed up if you do.
     function add(uint256 _allocPoint, IERC20 _lpToken, bool _withUpdate) public onlyOwner {
         require(address(_lpToken) != address(0), "_lpToken is the zero address");
-        require(poolInfo[LpOfPid[address(_lpToken)]].lpToken != _lpToken, "repeatedly adding");
+        require(LpOfPid[address(_lpToken)] == 0, "repeatedly adding");
+        if (poolInfo.length > 0) {
+            require(poolInfo[0].lpToken != _lpToken, "index 0 repeatedly adding");
+        }
+
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -196,6 +200,7 @@ contract Pool is Ownable {
         }));
         LpOfPid[address(_lpToken)] = poolLength() - 1;
         emit Add(_allocPoint, address(_lpToken), _withUpdate);
+
     }
 
     // Update the given pool's token allocation point. Can only be called by the owner.
@@ -246,7 +251,7 @@ contract Pool is Ownable {
     }
 
     // Update reward variables of the given pool to be up-to-date.
-    function updatePool(uint256 _pid) public validatePoolByPid(_pid){
+    function updatePool(uint256 _pid) public validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         if (block.number <= pool.lastRewardBlock) {
             return;
@@ -325,7 +330,7 @@ contract Pool is Ownable {
         depositToken(_pid, _amount, msg.sender);
     }
 
-    function depositToken(uint256 _pid, uint256 _amount, address _user) private validatePoolByPid(_pid){
+    function depositToken(uint256 _pid, uint256 _amount, address _user) private validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         updatePool(_pid);
@@ -349,7 +354,7 @@ contract Pool is Ownable {
         withdrawToken(_pid, _amount, msg.sender);
     }
 
-    function withdrawToken(uint256 _pid, uint256 _amount, address _user) private validatePoolByPid(_pid){
+    function withdrawToken(uint256 _pid, uint256 _amount, address _user) private validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         require(user.amount >= _amount, "withdrawToken: not good");
@@ -392,7 +397,7 @@ contract Pool is Ownable {
         emergencyWithdrawToken(_pid, msg.sender);
     }
 
-    function emergencyWithdrawToken(uint256 _pid, address _user) private validatePoolByPid(_pid){
+    function emergencyWithdrawToken(uint256 _pid, address _user) private validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 amount = user.amount;
