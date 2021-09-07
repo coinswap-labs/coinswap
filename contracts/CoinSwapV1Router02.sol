@@ -480,15 +480,9 @@ contract CoinSwapV1Router02 {
     }
 
     function feeTransFer(address from, uint feeValue) internal {
-        if (IFeeManager(feeManager).isBurn() == 1) {
-            address burnAddress = IFeeManager(feeManager).blackHoleAddress();
-            TransferHelper.safeTransferFrom(IFeeManager(feeManager).feeToken(), from, burnAddress, feeValue);
-            emit FeeBurn(IFeeManager(feeManager).feeToken(), burnAddress, feeValue);
-        } else {
-            address feeAddress = IFeeManager(feeManager).defaultFeeAddress();
-            TransferHelper.safeTransferFrom(IFeeManager(feeManager).feeToken(), from, feeAddress, feeValue);
-            emit FeeSplit(from, 0, IFeeManager(feeManager).feeToken(), feeAddress, feeValue);
-        }
+        address burnAddress = IFeeManager(feeManager).blackHoleAddress();
+        TransferHelper.safeTransferFrom(IFeeManager(feeManager).feeToken(), from, burnAddress, feeValue);
+        emit FeeBurn(IFeeManager(feeManager).feeToken(), burnAddress, feeValue);
     }
 
     function updatePrice(address tokenA, address tokenB) internal {

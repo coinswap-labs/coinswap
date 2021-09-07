@@ -92,7 +92,7 @@ library CoinSwapV1Library {
         amounts[0] = amountIn;
         uint needCoinsNum;
         for (uint i; i < path.length - 1; i++) {
-            (amounts[i + 1], feeAmounts[i], needCoinsNum) = feeConsult(factory, amounts[i], feeManager, path[i], path[i + 1], false, from, needCoinsNum);
+            (amounts[i + 1], feeAmounts[i], needCoinsNum) = feeConsult(factory, amounts[i], feeManager, path[i], path[i + 1], false, from, needCoinsNum, i);
         }
     }
 
@@ -104,7 +104,7 @@ library CoinSwapV1Library {
         amounts[amounts.length - 1] = amountOut;
         uint needCoinsNum;
         for (uint i = path.length - 1; i > 0; i--) {
-            (amounts[i - 1], feeAmounts[i - 1], needCoinsNum) = feeConsult(factory, amounts[i], feeManager, path[i - 1], path[i], true, from, needCoinsNum);
+            (amounts[i - 1], feeAmounts[i - 1], needCoinsNum) = feeConsult(factory, amounts[i], feeManager, path[i - 1], path[i], true, from, needCoinsNum, i);
         }
     }
 
@@ -116,34 +116,38 @@ library CoinSwapV1Library {
         uint amount;
         uint fee;
         uint tempNum;
+        uint reserveIn;
+        uint reserveOut;
+        uint newNeedCoinsNum;
     }
 
-    function feeConsult(address factory, uint amountInput, address feeManager, address path, address path1, bool isIn, address from, uint needCoinsNum) internal view returns (uint, uint, uint){
-        Params memory params = Params(0, 0, 0);
-        (uint reserveIn, uint reserveOut) = getReserves(factory, path, path1);
+    function feeConsult(address factory, uint amountInput, address feeManager, address path, address path1, bool isIn, address from, uint needCoinsNum, uint i) internal view returns (uint, uint, uint){
+        Params memory params = Params(0, 0, 0, 0, 0, 0);
+        (params.reserveIn, params.reserveOut) = getReserves(factory, path, path1);
         if (isSupportSwitch(feeManager, from)) {
             if (isIn) {
-                (params.amount, params.fee) = getAmountInNoFee1(amountInput, reserveIn, reserveOut, feeManager, path, path1);
-                params.tempNum = params.tempNum.add(params.amount);
+                (params.amount, params.fee) = getAmountInNoFee1(amountInput, params.reserveIn, params.reserveOut, feeManager, path, path1);
+                if (i == 1) params.tempNum = params.tempNum.add(params.amount);
             } else {
-                (params.amount, params.fee) = getAmountOutNoFee1(amountInput, reserveIn, reserveOut, feeManager, path, path1);
-                params.tempNum = params.tempNum.add(amountInput);
+                (params.amount, params.fee) = getAmountOutNoFee1(amountInput, params.reserveIn, params.reserveOut, feeManager, path, path1);
+                if (i == 0) params.tempNum = params.tempNum.add(amountInput);
             }
             if (path != IFeeManager(feeManager).feeToken()) {
                 params.tempNum = 0;
             }
-            if (params.fee > 0 && IERC20(IFeeManager(feeManager).feeToken()).balanceOf(from) >= params.tempNum.add(needCoinsNum).add(params.fee)) {
-                return (params.amount, params.fee, params.tempNum.add(needCoinsNum).add(params.fee));
+            params.newNeedCoinsNum = params.tempNum.add(needCoinsNum).add(params.fee);
+            if (params.fee > 0 && IERC20(IFeeManager(feeManager).feeToken()).balanceOf(from) >= params.newNeedCoinsNum) {
+                return (params.amount, params.fee, params.newNeedCoinsNum);
             }
         }
         params.fee = 0;
-        params.tempNum=0;
+        params.tempNum = 0;
         if (isIn) {
-            (params.amount) = getAmountIn(amountInput, reserveIn, reserveOut);
-            params.tempNum = params.tempNum.add(params.amount);
+            (params.amount) = getAmountIn(amountInput, params.reserveIn, params.reserveOut);
+            if (i == 1) params.tempNum = params.tempNum.add(params.amount);
         } else {
-            (params.amount) = getAmountOut(amountInput, reserveIn, reserveOut);
-            params.tempNum = params.tempNum.add(amountInput);
+            (params.amount) = getAmountOut(amountInput, params.reserveIn, params.reserveOut);
+            if (i == 0) params.tempNum = params.tempNum.add(amountInput);
         }
         if (path != IFeeManager(feeManager).feeToken()) {
             params.tempNum = 0;
