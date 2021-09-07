@@ -15,7 +15,6 @@ contract FeeManager is Ownable {
     address public router;
     address public feeToken;
     address public factory;
-    uint8 public isBurn = 0;
     uint8 public isOpenSwapMining = 1;
     address public inviteManger;
 
@@ -34,7 +33,6 @@ contract FeeManager is Ownable {
     event SetRouter(address _router);
     event SetInviteManager(address _factory);
     event SetFactory(address _feeAddress);
-    event SetBurnSwitch(uint8 _isBurn);
     event SetOpenSwapMiningSwitch(uint8 _isOpenSwapMining);
     event SetSupportDeductionFeeSwitch(address _owner, uint8 _isSupport);
     event SetSupportDeductionFeeValue(uint _n);
@@ -77,12 +75,6 @@ contract FeeManager is Ownable {
         emit SetFactory(_factory);
     }
 
-    function setBurnSwitch(uint8 _isBurn) external onlyOwner {
-        require(_isBurn == 0 || _isBurn == 1, "_isBurn is error");
-        isBurn = _isBurn;
-        emit SetBurnSwitch(_isBurn);
-    }
-
     function setOpenSwapMiningSwitch(uint8 _isOpenSwapMining) external onlyOwner {
         require(_isOpenSwapMining == 0 || _isOpenSwapMining == 1, "_isOpenSwapMining is error");
         isOpenSwapMining = _isOpenSwapMining;
@@ -90,7 +82,7 @@ contract FeeManager is Ownable {
     }
 
     function setSupportDeductionFeeSwitch(uint8 _isSupport) external {
-        require(_isSupport >= 0, "_isSupport value error");
+        require(_isSupport == 0 || _isSupport == 1, "_isSupport value error");
         supportDeductionFeeSwitches[msg.sender] = _isSupport;
         emit SetSupportDeductionFeeSwitch(msg.sender, _isSupport);
     }

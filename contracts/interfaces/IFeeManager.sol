@@ -18,8 +18,6 @@ interface IFeeManager {
 
     function router() external view returns (address);
 
-    function isBurn() external view returns (uint8);
-
     function isWhitelist(address _token) external view returns (bool);
 
     function feeSplit(address from, uint256 feeValue) external returns (uint[] memory valueData, address[] memory addressData);
