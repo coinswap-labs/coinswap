@@ -72,6 +72,20 @@ contract SwapMining is Ownable {
     mapping(uint256 => mapping(address => UserInfo)) public userInfo;
 
     bool unlocked = true;
+
+    event SetHalvingPeriod(uint _block);
+    event SetRouter(address _router);
+    event SetTokenPerBlock(uint _num);
+    event SetOracle(address _oracle);
+    event SetStartBlock(uint _startBlock);
+    event AddPair(uint256 _allocPoint, address _lpToken, bool _withUpdate);
+    event SetPair(uint256 _pid, uint256 _allocPoint, bool _withUpdate);
+    event AddWhitelist(address _token);
+    event DelWhitelist(address _token);
+    event Mint(uint pid, uint amount);
+    event Swap(address account, address input, address output, uint256 amount);
+    event TakerWithdraw(address account, uint amount);
+
     modifier lock() {
         require(unlocked, 'LOK');
         unlocked = false;
@@ -100,6 +114,7 @@ contract SwapMining is Ownable {
         lastRewardBlock : lastRewardBlock
         }));
         pairOfPid[_pair] = poolLength() - 1;
+        emit AddPair(_allocPoint, _pair, _withUpdate);
     }
 
     // Update the allocPoint of the pool
@@ -109,22 +124,26 @@ contract SwapMining is Ownable {
         }
         totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);
         poolInfo[_pid].allocPoint = _allocPoint;
+        emit SetPair(_pid, _allocPoint, _withUpdate);
     }
 
     // Set the number of token produced by each block
     function setTokenPerBlock(uint256 _newPerBlock) public onlyOwner {
         massMintPools();
         tokenPerBlock = _newPerBlock;
+        emit SetTokenPerBlock(_newPerBlock);
     }
 
     // Only tokens in the whitelist can be mined token
     function addWhitelist(address _addToken) public onlyOwner returns (bool) {
         require(_addToken != address(0), "SwapMining: token is the zero address");
+        emit AddWhitelist(_addToken);
         return EnumerableSet.add(_whitelist, _addToken);
     }
 
     function delWhitelist(address _delToken) public onlyOwner returns (bool) {
         require(_delToken != address(0), "SwapMining: token is the zero address");
+        emit DelWhitelist(_delToken);
         return EnumerableSet.remove(_whitelist, _delToken);
     }
 
@@ -143,21 +162,25 @@ contract SwapMining is Ownable {
 
     function setHalvingPeriod(uint256 _block) public onlyOwner {
         halvingPeriod = _block;
+        emit SetHalvingPeriod(_block);
     }
 
     function setRouter(address newRouter) public onlyOwner {
         require(newRouter != address(0), "SwapMining: new router is the zero address");
         router = newRouter;
+        emit SetRouter(newRouter);
     }
 
     function setOracle(IOracle _oracle) public onlyOwner {
         require(address(_oracle) != address(0), "SwapMining: new oracle is the zero address");
         oracle = _oracle;
+        emit SetOracle(address(_oracle));
     }
 
     function setStartBlock(uint256 _startBlock) public onlyOwner {
         require(_startBlock > startBlock, "SwapMining: _startBlock is error");
         startBlock = _startBlock;
+        emit SetStartBlock(_startBlock);
     }
 
     function phase(uint256 blockNumber) public view returns (uint256) {
@@ -225,6 +248,7 @@ contract SwapMining is Ownable {
         // Increase the number of tokens in the current pool
         pool.allocTokenAmount = pool.allocTokenAmount.add(tokenReward);
         pool.lastRewardBlock = block.number;
+        emit Mint(_pid, tokenReward);
         return true;
     }
 
@@ -261,7 +285,7 @@ contract SwapMining is Ownable {
         UserInfo storage user = userInfo[pairOfPid[pair]][account];
         user.quantity = user.quantity.add(quantity);
         user.blockNumber = block.number;
-
+        emit Swap(account, input, output, amount);
         return true;
     }
 

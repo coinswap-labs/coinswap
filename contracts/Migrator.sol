@@ -16,6 +16,13 @@ contract Migrator {
     ICoinSwapV1Factory public oldFactory;
     ICoinSwapV1Factory public newFactory;
 
+    event Migrate (
+        address user,
+        address tokenA,
+        address tokenB,
+        uint256 liquidity
+    );
+
     constructor(ICoinSwapV1Router02 _oldRouter, ICoinSwapV1Router02 _newRouter, ICoinSwapV1Factory _oldFactory, ICoinSwapV1Factory _newFactory) public {
         oldRouter = _oldRouter;
         newRouter = _newRouter;
@@ -24,7 +31,7 @@ contract Migrator {
         newFactory = _newFactory;
     }
 
-    function migrate (
+    function migrate(
         address tokenA,
         address tokenB,
         uint256 liquidity,
@@ -50,6 +57,7 @@ contract Migrator {
         if (amount1 > pooledAmount1) {
             TransferHelper.safeTransfer(token1, msg.sender, amount1 - pooledAmount1);
         }
+        emit Migrate(msg.sender, tokenA, tokenB, liquidity);
     }
 
     function removeLiquidity(
@@ -73,7 +81,7 @@ contract Migrator {
         require(amountB >= amountBMin, 'Migrate: INSUFFICIENT_B_AMOUNT');
     }
 
-    function addLiquidity (
+    function addLiquidity(
         address tokenA,
         address tokenB,
         uint256 amountADesired,
@@ -87,7 +95,7 @@ contract Migrator {
         ICoinSwapV1Pair(pairAddress).mint(msg.sender);
     }
 
-    function _addLiquidity (
+    function _addLiquidity(
         address tokenA,
         address tokenB,
         uint256 amountADesired,
@@ -98,7 +106,7 @@ contract Migrator {
             pairAddress = newFactory.createPair(tokenA, tokenB);
         }
         ICoinSwapV1Pair pair = ICoinSwapV1Pair(pairAddress);
-        (uint reserveA, uint reserveB, ) = pair.getReserves();
+        (uint reserveA, uint reserveB,) = pair.getReserves();
         if (reserveA == 0 && reserveB == 0) {
             (amountA, amountB) = (amountADesired, amountBDesired);
         } else {

@@ -77,6 +77,19 @@ contract Pool is Ownable {
     event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event InviteTransfer(address src, uint256 tokenId, address dst, uint amount);
 
+    event SetHalvingPeriod(uint _block);
+    event SetInviteManager(address _manager);
+    event SetLockUpRate(uint _rate);
+    event SetIsLockSwitch(uint _lock);
+    event SetAutoSetSwitch(uint _auto);
+    event SetVestingPeriod(uint _block);
+    event SetTokenPerBlock(uint _num);
+    event SetPause(bool _pause);
+    event SetOracle(address _oracle);
+    event SetStartBlock(uint _startBlock);
+    event Add(uint256 _allocPoint, address _lpToken, bool _withUpdate);
+    event Set(uint256 _pid, uint256 _allocPoint, bool _withUpdate);
+
     constructor(
         ICoinsToken _token,
         IOracle _oracle,
@@ -98,36 +111,43 @@ contract Pool is Ownable {
 
     function setHalvingPeriod(uint256 _block) public onlyOwner {
         halvingPeriod = _block;
+        emit SetHalvingPeriod(_block);
     }
 
     function setInviteManager(address _inviteManager) public onlyOwner {
         require(_inviteManager != address(0), "_inviteManager is zero address");
         inviteManager = _inviteManager;
+        emit SetInviteManager(_inviteManager);
     }
 
     function setLockUpRate(uint256 _lockUpRate) public onlyOwner {
         require(_lockUpRate >= 0 && _lockUpRate < 10000, "_lockUpRate is error");
         lockUpRate = _lockUpRate;
+        emit SetLockUpRate(_lockUpRate);
     }
 
     function setIsLockSwitch(uint256 _isLock) public onlyOwner {
         require(_isLock == 0 || _isLock == 1, "_isLock is error");
         isLock = _isLock;
+        emit SetIsLockSwitch(_isLock);
     }
 
     function setAutoSetSwitch(uint256 _isAutoSet) public onlyOwner {
         require(_isAutoSet == 0 || _isAutoSet == 1, "_isAutoSet is error");
         isAutoSet = _isAutoSet;
+        emit SetAutoSetSwitch(_isAutoSet);
     }
 
     function setVestingPeriod(uint256 _vestingPeriod) public onlyOwner {
         vestingPeriod = _vestingPeriod;
+        emit SetVestingPeriod(_vestingPeriod);
     }
 
     // Set the number of token produced by each block
     function setTokenPerBlock(uint256 _newPerBlock) public onlyOwner {
         massUpdatePools();
         tokenPerBlock = _newPerBlock;
+        emit SetTokenPerBlock(_newPerBlock);
     }
 
     function poolLength() public view returns (uint256) {
@@ -136,16 +156,19 @@ contract Pool is Ownable {
 
     function setPause() public onlyOwner {
         paused = !paused;
+        emit SetPause(paused);
     }
 
     function setOracle(IOracle _oracle) public onlyOwner {
         require(address(_oracle) != address(0), "Pool: new oracle is the zero address");
         oracle = _oracle;
+        emit SetOracle(address(_oracle));
     }
 
     function setStartBlock(uint256 _startBlock) public onlyOwner {
         require(_startBlock > startBlock, "Pool: _startBlock is error");
         startBlock = _startBlock;
+        emit SetStartBlock(_startBlock);
     }
 
 
@@ -166,6 +189,7 @@ contract Pool is Ownable {
         totalAmount : 0
         }));
         LpOfPid[address(_lpToken)] = poolLength() - 1;
+        emit Add(_allocPoint, address(_lpToken), _withUpdate);
     }
 
     // Update the given pool's token allocation point. Can only be called by the owner.
@@ -175,6 +199,7 @@ contract Pool is Ownable {
         }
         totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);
         poolInfo[_pid].allocPoint = _allocPoint;
+        emit Set(_pid, _allocPoint, _withUpdate);
     }
 
     function phase(uint256 blockNumber) public view returns (uint256) {

@@ -14,6 +14,9 @@ contract CoinSwapV1Factory {
     address[] public allPairs;
 
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
+    event SetFeeTo(address _feeTo);
+    event SetFeeManager(address _feeManager);
+    event SetFeeToSetter(address _feeToSetter);
 
     constructor(address _feeToSetter) public {
         feeToSetter = _feeToSetter;
@@ -45,16 +48,19 @@ contract CoinSwapV1Factory {
     function setFeeTo(address _feeTo) external {
         require(msg.sender == feeToSetter, 'CoinSwapV1: FORBIDDEN');
         feeTo = _feeTo;
+        emit SetFeeTo(_feeTo);
     }
 
     function setFeeManager(address _feeManager) external {
         require(msg.sender == feeToSetter, 'CoinSwapV1: feeManager');
         feeManager = _feeManager;
+        emit SetFeeManager(_feeManager);
     }
 
     function setFeeToSetter(address _feeToSetter) external {
         require(msg.sender == feeToSetter, 'CoinSwapV1: FORBIDDEN');
         feeToSetter = _feeToSetter;
+        emit SetFeeToSetter(_feeToSetter);
     }
 
     function getPairInitCode() external pure returns (bytes32){

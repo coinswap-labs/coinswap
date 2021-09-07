@@ -19,6 +19,10 @@ contract InviteManager is IInviteManager, ERC721, Ownable {
     event SwapKickbackUpdated(uint256 root, uint256 parent);
     event MiningKickbackUpdated(uint256 root, uint256 parent);
 
+    event SetRootReward(uint256 on);
+    event SetRootRewardWhiteList(uint256 root, uint256 on);
+    event SetAuction(address _auction);
+
     uint256 public override kickbackDecimals = 4;
     uint256 public swapKickbackRoot = 4500;
     uint256 public swapKickbackParent = 2500;
@@ -50,10 +54,12 @@ contract InviteManager is IInviteManager, ERC721, Ownable {
 
     function setRootReward(uint256 on) public onlyOwner {
         isRootReward = on;
+        emit SetRootReward(on);
     }
 
     function setRootRewardWhiteList(uint256 root, uint256 on) public onlyOwner {
         rootRewardWhiteList[root] = on;
+        emit SetRootRewardWhiteList(root,on);
     }
 
 
@@ -101,6 +107,7 @@ contract InviteManager is IInviteManager, ERC721, Ownable {
     address public auction;
     function setAuction(address _auction) public onlyOwner {
         auction = _auction;
+        emit SetAuction(_auction);
     }
 
     function auctionNode(address owner) public override returns (uint256 id) {

@@ -27,6 +27,9 @@ contract CoinsToken is ERC20Capped, IERC677, IERC2612, Ownable {
 
     mapping(address => uint256) public override nonces;
 
+    event AddMinter(address _addMinter);
+    event DelMinter(address _delMinter);
+
     constructor() ERC20Capped(1e27) ERC20("CoinSwap", "COINS") Ownable() public {
         uint256 chainId;
         assembly {
@@ -104,11 +107,13 @@ contract CoinsToken is ERC20Capped, IERC677, IERC2612, Ownable {
 
     function addMinter(address _addMinter) public onlyOwner returns (bool) {
         require(_addMinter != address(0), "CoinsToken: _addMinter is the zero address");
+        emit AddMinter(_addMinter);
         return EnumerableSet.add(_minters, _addMinter);
     }
 
     function delMinter(address _delMinter) public onlyOwner returns (bool) {
         require(_delMinter != address(0), "CoinsToken: _delMinter is the zero address");
+        emit DelMinter(_delMinter);
         return EnumerableSet.remove(_minters, _delMinter);
     }
 

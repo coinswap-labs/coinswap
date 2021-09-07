@@ -20,6 +20,10 @@ contract FundAndTeamVester is Ownable {
 
     uint256 public lastUpdate;
 
+    event SetRecipient(address _recipient);
+    event SetHalvingPeriod(uint256 _block);
+    event Claim(address _to, uint _num);
+
     constructor(
         ICoinsToken _coins,
         address _recipient,
@@ -38,10 +42,12 @@ contract FundAndTeamVester is Ownable {
     function setRecipient(address _recipient) external onlyOwner {
         require(address(0) != recipient, "recipient is can not address(0)");
         recipient = _recipient;
+        emit SetRecipient(_recipient);
     }
 
     function setHalvingPeriod(uint256 _block) public onlyOwner {
         halvingPeriod = _block;
+        emit SetHalvingPeriod(_block);
     }
 
     function phase(uint256 blockNumber) public view returns (uint256) {
@@ -79,5 +85,6 @@ contract FundAndTeamVester is Ownable {
             coins.mint(recipient, tokenReward);
             lastUpdate = block.number;
         }
+        emit Claim(recipient, tokenReward);
     }
 }

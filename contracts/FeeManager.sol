@@ -29,6 +29,19 @@ contract FeeManager is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
     EnumerableSet.AddressSet private _feeWhitelist;
 
+    event SetDefaultFeeAddress(address _feeAddress);
+    event SetBlackHoleAddress(address _blackHoleAddress);
+    event SetRouter(address _router);
+    event SetInviteManager(address _factory);
+    event SetFactory(address _feeAddress);
+    event SetBurnSwitch(uint8 _isBurn);
+    event SetOpenSwapMiningSwitch(uint8 _isOpenSwapMining);
+    event SetSupportDeductionFeeSwitch(address _owner, uint8 _isSupport);
+    event SetSupportDeductionFeeValue(uint _n);
+    event SetFeeToRateValue(uint _feeToRate);
+    event AddWhitelist(address _token);
+    event DelWhitelist(address _token);
+
     constructor(address _feeToken, address _feeAddress) public {
         feeToken = _feeToken;
         defaultFeeAddress = _feeAddress;
@@ -38,51 +51,61 @@ contract FeeManager is Ownable {
     function setDefaultFeeAddress(address _feeAddress) external onlyOwner {
         require(_feeAddress != address(0), "_feeAddress is not zero address");
         defaultFeeAddress = _feeAddress;
+        emit SetDefaultFeeAddress(_feeAddress);
     }
 
     function setBlackHoleAddress(address _blackHoleAddress) external onlyOwner {
         blackHoleAddress = _blackHoleAddress;
+        emit SetBlackHoleAddress(_blackHoleAddress);
     }
 
     function setRouter(address _router) external onlyOwner {
         require(_router != address(0), "router is not zero address");
         router = _router;
+        emit SetRouter(_router);
     }
 
     function setInviteManager(address _inviteManger) external onlyOwner {
         require(_inviteManger != address(0), "_subManager is not zero address");
         inviteManger = _inviteManger;
+        emit SetInviteManager(_inviteManger);
     }
 
     function setFactory(address _factory) external onlyOwner {
         require(_factory != address(0), "_factory is zero address");
         factory = _factory;
+        emit SetFactory(_factory);
     }
 
     function setBurnSwitch(uint8 _isBurn) external onlyOwner {
         require(_isBurn == 0 || _isBurn == 1, "_isBurn is error");
         isBurn = _isBurn;
+        emit SetBurnSwitch(_isBurn);
     }
 
     function setOpenSwapMiningSwitch(uint8 _isOpenSwapMining) external onlyOwner {
         require(_isOpenSwapMining == 0 || _isOpenSwapMining == 1, "_isOpenSwapMining is error");
         isOpenSwapMining = _isOpenSwapMining;
+        emit SetOpenSwapMiningSwitch(_isOpenSwapMining);
     }
 
     function setSupportDeductionFeeSwitch(uint8 _isSupport) external {
         require(_isSupport >= 0, "_isSupport value error");
         supportDeductionFeeSwitches[msg.sender] = _isSupport;
+        emit SetSupportDeductionFeeSwitch(msg.sender, _isSupport);
     }
 
     function setSupportDeductionFeeValue(uint256 _n) external onlyOwner {
         require(_n > 0 && _n <= 10000, "_n value error");
         supportDeductionFeeValue = _n;
+        emit SetSupportDeductionFeeValue(_n);
     }
 
     // _feeToRate 1 is  3/6 ,2 is 2/6 ,5 is 1/6 ,0 is 6/6
     function setFeeToRateValue(uint256 _feeToRate) external onlyOwner {
         require(_feeToRate == 0 || _feeToRate == 1 || _feeToRate == 2 || _feeToRate == 5, "_feeToRate value error");
         feeToRate = _feeToRate;
+        emit SetFeeToRateValue(_feeToRate);
     }
 
     struct Params1 {
@@ -153,11 +176,13 @@ contract FeeManager is Ownable {
 
     function addWhitelist(address _addToken) external onlyOwner returns (bool) {
         require(_addToken != address(0), "token is the zero address");
+        emit AddWhitelist(_addToken);
         return EnumerableSet.add(_feeWhitelist, _addToken);
     }
 
     function delWhitelist(address _delToken) external onlyOwner returns (bool) {
         require(_delToken != address(0), "token is the zero address");
+        emit DelWhitelist(_delToken);
         return EnumerableSet.remove(_feeWhitelist, _delToken);
     }
 

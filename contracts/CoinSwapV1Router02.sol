@@ -29,6 +29,10 @@ contract CoinSwapV1Router02 {
 
     event FeeSplit(address src, uint256 _tokenId, address _token, address _to, uint256 _value);
     event FeeBurn(address _token, address _to, uint256 _value);
+    event SetOwner(address _owner);
+    event SetSwapMining(address _swapMining);
+    event SetFeeManager(address _feeManager);
+    event SetOracle(address _oracle);
 
     modifier ensure(uint deadline) {
         require(deadline >= block.timestamp, 'CoinSwapV1Router02: EXPIRED');
@@ -54,19 +58,23 @@ contract CoinSwapV1Router02 {
     function setOwner(address _owner) external onlyOwner {
         require(_owner != address(0), "_owner is zero address");
         owner = _owner;
+        emit SetOwner( _owner);
     }
 
     function setSwapMining(address _swapMining) public onlyOwner {
         swapMining = _swapMining;
+        emit SetSwapMining(_swapMining);
     }
 
     function setFeeManager(address _feeManager) public onlyOwner {
         require(_feeManager != address(0), "_feeManager is zero address");
         feeManager = _feeManager;
+        emit SetFeeManager(_feeManager);
     }
 
     function setOracle(IOracle _oracle) public onlyOwner {
         oracle = _oracle;
+        emit SetOracle(address(_oracle));
     }
 
     // **** ADD LIQUIDITY ****

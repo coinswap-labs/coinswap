@@ -11,7 +11,7 @@ import "./interfaces/IERC20.sol";
 contract NodeAuction is Ownable {
     using SafeMath for uint256;
 
-    constructor(IERC20 token , IInviteManager manager) public Ownable() {
+    constructor(IERC20 token, IInviteManager manager) public Ownable() {
         feeToken = token;
         inviteManager = manager;
         round = 1;
@@ -19,6 +19,8 @@ contract NodeAuction is Ownable {
 
     IERC20 public feeToken;
     IInviteManager public inviteManager;
+
+    event Stop(uint _block);
 
     function setFeeToken(IERC20 token) public onlyOwner {
         feeToken = token;
@@ -53,6 +55,7 @@ contract NodeAuction is Ownable {
         endBlock = 0;
         startPrice = 0;
         endPrice = 0;
+        emit Stop(block.number);
     }
 
     function currentPrice() public view returns (uint256 price) {
