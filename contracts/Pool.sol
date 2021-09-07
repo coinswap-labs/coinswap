@@ -262,7 +262,7 @@ contract Pool is Ownable {
             return;
         }
         uint256 tokenReward = blockReward.mul(pool.allocPoint).div(totalAllocPoint);
-        bool minRet = token.mint(address(this), tokenReward);
+        token.mint(address(this), tokenReward);
         pool.accTokenPerShare = pool.accTokenPerShare.add(tokenReward.mul(1e12).div(lpSupply));
         pool.lastRewardBlock = block.number;
     }
