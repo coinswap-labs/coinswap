@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity =0.6.12;
 
 interface IInviteManager {
     function inviteInfo(address trader) external view returns (uint256 rootId, address rootOwner, uint256 parentId, address parentOwner);

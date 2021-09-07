@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.6.2;
+pragma solidity =0.6.2;
 
 import './ICoinSwapV1Router01.sol';
 

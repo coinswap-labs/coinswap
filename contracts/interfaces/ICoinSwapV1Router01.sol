@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.6.2;
+pragma solidity =0.6.2;
 
 interface ICoinSwapV1Router01 {
     function factory() external pure returns (address);

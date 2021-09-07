@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity =0.6.12;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -121,8 +121,8 @@ contract InviteManager is IInviteManager, ERC721, Ownable {
 
         emit NodeUpdated(id, name, domain, color, logo, msg.sender);
     }
-        
-    function registerNode(uint256 parent) public {                
+
+    function registerNode(uint256 parent) public {
         require(parent > 0 && parent < _nextId, "parent not exist");
         _createNode(msg.sender, parent);
     }

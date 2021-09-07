@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.5.0;
+pragma solidity =0.6.12;
 
 interface IOracle {
     function update(address tokenA, address tokenB) external;
