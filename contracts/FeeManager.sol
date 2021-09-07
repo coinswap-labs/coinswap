@@ -55,6 +55,7 @@ contract FeeManager is Ownable {
     }
 
     function setFactory(address _factory) external onlyOwner {
+        require(_factory != address(0), "_factory is zero address");
         factory = _factory;
     }
 
@@ -94,7 +95,8 @@ contract FeeManager is Ownable {
     }
 
     function feeSplit(address from, uint256 feeValue) external view returns (uint[] memory valueData, address[] memory addressData) {
-        require(inviteManger != address(0), "inviteManger is not zero address");
+        require(inviteManger != address(0), "inviteManger is zero address");
+        require(from != address(0), "from is zero address");
         Params1 memory params = Params1(0, address(0), 0, 0, address(0), 0);
         (params._rootId, params._rootOwner, params._rootRate, params._parentId, params._parentOwner, params._parentRate) = IInviteManager(inviteManger).swapKickback(from);
         valueData = new uint[](4);

@@ -77,6 +77,7 @@ contract InviteManager is IInviteManager, ERC721, Ownable {
 
 
     function _createNode(address owner, uint256 parent) internal returns(uint256 id) {
+        require(owner != address(0), "owner is zero address");
         uint256 root = _nodes[parent].level == 1 ? parent : _nodes[parent].root;
         uint256 level = _nodes[parent].level + 1;
         _nodes[_nextId] = Node({

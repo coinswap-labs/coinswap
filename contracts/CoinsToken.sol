@@ -74,6 +74,7 @@ contract CoinsToken is ERC20Capped, IERC677, IERC2612, Ownable {
     // implement the erc-2612
     function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external override {
         require(owner != address(0), "zero address");
+        require(spender != address(0), "spender is zero address");
         require(block.timestamp <= deadline || deadline == 0, "permit is expired");
 
         bytes32 digest = keccak256(

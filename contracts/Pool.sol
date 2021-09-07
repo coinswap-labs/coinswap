@@ -101,6 +101,7 @@ contract Pool is Ownable {
     }
 
     function setInviteManager(address _inviteManager) public onlyOwner {
+        require(_inviteManager != address(0), "_inviteManager is zero address");
         inviteManager = _inviteManager;
     }
 

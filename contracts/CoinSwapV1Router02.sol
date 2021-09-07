@@ -52,6 +52,7 @@ contract CoinSwapV1Router02 {
     }
 
     function setOwner(address _owner) external onlyOwner {
+        require(_owner != address(0), "_owner is zero address");
         owner = _owner;
     }
 
@@ -60,6 +61,7 @@ contract CoinSwapV1Router02 {
     }
 
     function setFeeManager(address _feeManager) public onlyOwner {
+        require(_feeManager != address(0), "_feeManager is zero address");
         feeManager = _feeManager;
     }
 
