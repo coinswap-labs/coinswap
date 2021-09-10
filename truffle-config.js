@@ -122,13 +122,13 @@ module.exports = {
     },
 
     bsc: {
-      provider: () => new HDWalletProvider(privateKey, 'https://bsc-dataseed1.binance.org'),
+      provider: () => new HDWalletProvider(privateKey, 'https://bsc-dataseed1.ninicoin.io/'),
       network_id: 56,
       // confirmations: 10,
       timeoutBlocks: 200,
       skipDryRun: true,
-      gas: 4000000,           // Gas sent with each transaction (default: ~6700000)
-      gasPrice: 5000000000
+      gas: 84300000,           // Gas sent with each transaction (default: ~6700000)
+      gasPrice: 10000000000
     },
   },
 
