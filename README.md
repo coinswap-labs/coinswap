@@ -14,7 +14,7 @@ Pancake Migrator:     https://bscscan.com/address/0x494960C78353A77c8a4cAEa83dcF
 Mdex Migrator:        https://bscscan.com/address/0x5b278Bd5aCC8e8a26Daf342e06E44aB26c070ec9#contracts
 Bakery Migrator:      https://bscscan.com/address/0xE54C6a5ab03257c6420FcBD2D5A505E573795454#contracts	
 Apeswap Migrator:     https://bscscan.com/address/0x0a00084e491d81e665bAfAFE80a5b44E84321239#contracts
-BabySwap Migrator:    https://bscscan.com/address/0x8feD66C0b8D962c473a43174eC4f392d8821D73c#contracts
+BabySwap Migrator:    https://bscscan.com/address/0x4f898e91c12ed43cd0b2e6c8824e45fb68914898#contracts
 
 
 ```
